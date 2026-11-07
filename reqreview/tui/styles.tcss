@@ -1,0 +1,198 @@
+/* Loop Engineering Studio: layout and theme. Uses only theme variables so light/dark both work. */
+
+PipelineStrip {
+    height: 3;
+    padding: 1 1 0 1;
+    background: $panel;
+}
+
+TabbedContent {
+    height: 1fr;
+}
+
+.title {
+    text-style: bold;
+    color: $accent;
+    padding: 0 0 1 0;
+}
+
+.hint {
+    color: $text-muted;
+    padding: 0 0 1 0;
+}
+
+.error {
+    color: $error;
+}
+
+.btnrow {
+    height: auto;
+    padding: 1 0 0 0;
+}
+
+.btnrow Button {
+    margin: 0 1 0 0;
+}
+
+/* Tab 1: Review Studio */
+#studio-row {
+    height: 1fr;
+}
+
+#left {
+    width: 36%;
+    padding: 0 1;
+}
+
+#center {
+    width: 32%;
+    padding: 0 1;
+    border-left: solid $primary;
+    border-right: solid $primary;
+}
+
+#right {
+    width: 1fr;
+    padding: 0 1;
+}
+
+#req-table {
+    height: 1fr;
+}
+
+#trace {
+    height: 1fr;
+}
+
+#rep-badges {
+    height: auto;
+    padding: 0 1 1 1;
+}
+
+#runs-table {
+    height: 1fr;
+}
+
+Markdown {
+    padding: 0 1;
+}
+
+/* Tab 2: Event loop */
+#events-row {
+    height: 1fr;
+}
+
+#ev-left {
+    width: 64%;
+    padding: 0 1;
+}
+
+#ev-right {
+    width: 1fr;
+    padding: 0 1;
+    border-left: solid $primary;
+}
+
+#event-table {
+    height: 1fr;
+}
+
+#queue-panel {
+    height: auto;
+    padding: 0 0 1 0;
+}
+
+/* Tab 3: Improve */
+#imp-left {
+    width: 30%;
+    padding: 0 1;
+}
+
+#imp-center {
+    width: 38%;
+    padding: 0 1;
+    border-left: solid $primary;
+    border-right: solid $primary;
+}
+
+#imp-right {
+    width: 1fr;
+    padding: 0 1;
+}
+
+#ver-table {
+    height: 10;
+}
+
+#imp-hint {
+    height: auto;
+    padding: 1 0 0 0;
+}
+
+#imp-progress {
+    margin: 1 0 0 0;
+}
+
+#imp-status {
+    height: auto;
+    padding: 1 0 0 0;
+    color: $text-muted;
+}
+
+PassRateChart {
+    height: auto;
+    padding: 0 0 1 0;
+}
+
+#proposal {
+    height: auto;
+}
+
+/* Modals */
+UploadScreen, RequirementScreen, ConfirmScreen, HelpScreen {
+    align: center middle;
+}
+
+#dialog {
+    width: 80%;
+    max-width: 110;
+    height: auto;
+    max-height: 90%;
+    border: thick $primary;
+    background: $surface;
+    padding: 1 2;
+}
+
+#rtext {
+    height: 12;
+    margin: 1 0 0 0;
+}
+
+HelpScreen VerticalScroll {
+    height: 26;
+}
+
+/* Tab 4: Diagnostics */
+#diag-status {
+    height: auto;
+    padding: 0 1 1 1;
+}
+
+#diag-row {
+    height: 1fr;
+}
+
+#diag-left {
+    width: 52%;
+    padding: 0 1;
+}
+
+#diag-right {
+    width: 1fr;
+    padding: 0 1;
+    border-left: solid $primary;
+}
+
+#diag-table {
+    height: 1fr;
+}

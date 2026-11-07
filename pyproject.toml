@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loop-engineering-studio"
+version = "1.0.0"
+description = "A Textual TUI that makes four engineering loops visible: agent, verification, event-driven and hill-climb."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "textual",
+  "rich",
+  "watchfiles",
+  "deepagents",
+  "langchain",
+  "langchain-openai",
+  "langgraph",
+  "python-dotenv",
+  "pydantic>=2",
+  "httpx",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[project.scripts]
+reqreview = "reqreview.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["reqreview*"]
+
+[tool.setuptools.package-data]
+reqreview = ["assets/*", "tui/*.tcss"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: needs an OpenRouter key and network (skipped by default)"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+# Syntax errors and undefined names only; keep CI signal high.
+select = ["E9", "F63", "F7", "F82"]
