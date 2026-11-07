@@ -11,11 +11,6 @@ A terminal app (Python + [Textual](https://github.com/textualize/textual)) that 
 
 Human gates: **approve a review** (the agent never closes its own work) and **approve a harness change** (the analyst proposes, plain code applies, a human decides).
 
-## Try it without installing anything
-
-* **Interactive explainer:** `docs/index.html` is a single page that explains what an agent is and steps through five agent loops with animations. It is published with GitHub Pages: `https://<your-user>.github.io/loop-engineering-studio/`
-* **Run the real app in your browser:** open the repo in **GitHub Codespaces** (the `.devcontainer` installs everything), then run `reqreview tui --demo` in the terminal.
-
 ## Quickstart (no API key needed)
 
 ```bash
