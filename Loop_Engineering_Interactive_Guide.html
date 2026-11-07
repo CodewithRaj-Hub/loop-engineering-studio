@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>Loop Engineering — Build Agents That Improve</title>
+<meta name="description" content="A modern, interactive field guide to the four loops of reliable AI agent engineering: agent, verification, event-driven, and hill-climbing.">
+<style>
+:root{
+ --bg:#f5f7fb;--surface:#fff;--ink:#142238;--muted:#627087;--line:#e2e8f0;
+ --navy:#101827;--navy2:#18263b;--lime:#c9f36a;--purple:#8a73f5;--teal:#22b89a;
+ --blue:#4c91f7;--orange:#f28a60;--shadow:0 16px 48px rgba(23,39,65,.08);
+ --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:82px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans)}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit}
+.wrap{width:min(1160px,calc(100% - 40px));margin:auto}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(16,24,39,.94);backdrop-filter:blur(14px);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.nav{height:68px;display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;font:600 12px var(--mono);letter-spacing:.09em;color:var(--lime);white-space:nowrap}
+.brandmark{width:28px;height:28px;border:1px solid var(--lime);border-radius:8px;display:grid;place-items:center;font-size:17px}
+.navlinks{display:flex;gap:24px;margin-left:auto;align-items:center}
+.navlinks a{font-size:12px;color:#b9c3d3;transition:color .2s}.navlinks a:hover{color:var(--lime)}
+.menu{display:none;background:none;color:white;border:1px solid #3b4658;border-radius:9px;padding:7px 10px}
+.hero{background:var(--navy);color:#fff;position:relative;overflow:hidden;padding:84px 0 72px}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 78% 20%,rgba(138,115,245,.24),transparent 40%),radial-gradient(ellipse at 15% 100%,rgba(34,184,154,.11),transparent 38%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.eyebrow{font:11px var(--mono);letter-spacing:.15em;text-transform:uppercase;color:#9caec5;display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:22px;height:2px;background:var(--lime)}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(42px,6.2vw,76px);line-height:1.02;letter-spacing:-.055em;margin:20px 0}
+h1 span{color:var(--lime)}
+.hero p{max-width:620px;color:#b9c4d4;font-size:18px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 18px;border-radius:11px;font-weight:650;font-size:13px;border:1px solid transparent;cursor:pointer;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:var(--lime);color:var(--navy)}
+.btn.ghost{border-color:#435066;color:#fff;background:transparent}
+.hero-note{margin-top:30px;color:#8e9bb0;font:11px var(--mono);letter-spacing:.04em}
+.hero-art{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.2)}
+.art-head{display:flex;justify-content:space-between;align-items:center;color:#a9b7ca;font:11px var(--mono);margin-bottom:20px}
+.live{display:flex;align-items:center;gap:7px;color:var(--lime)}.live:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime)}
+.loop-stack{display:grid;gap:9px}
+.loop-band{border:1px solid;border-radius:13px;padding:13px 15px;display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.025)}
+.loop-band .num{font:12px var(--mono);opacity:.8}
+.loop-band strong{font-size:14px;display:block;line-height:1.3}
+.loop-band small{font-size:11px;color:#a9b7ca}
+.loop-band .arrow{margin-left:auto;font-size:18px;opacity:.7}
+.loop-band.l1{border-color:rgba(138,115,245,.65);margin:0 36px}
+.loop-band.l2{border-color:rgba(34,184,154,.65);margin:0 24px}
+.loop-band.l3{border-color:rgba(76,145,247,.65);margin:0 12px}
+.loop-band.l4{border-color:rgba(242,138,96,.65)}
+section{padding:82px 0}
+.section-head{max-width:720px;margin-bottom:32px}
+.kicker{font:11px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:#6b7b91}
+h2{font-size:clamp(32px,4vw,50px);line-height:1.08;letter-spacing:-.045em;margin:13px 0}
+.section-head p{font-size:17px;color:var(--muted);margin-bottom:0}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.stack-card,.concept-card,.pillar-panel,.explorer,.human-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.stack-card{padding:24px}
+.stack-visual{background:#f6f7fb;border:1px solid var(--line);border-radius:15px;padding:15px}
+.stack-layer{padding:17px;border:1px solid;border-radius:11px;margin-bottom:9px;font-weight:700;font-size:13px}
+.stack-layer:last-child{margin-bottom:0}
+.stack-layer small{display:block;font-weight:400;color:var(--muted);margin-top:3px}
+.layer-h{border-color:#8a73f5;background:#f1edff}.layer-c{border-color:#4c91f7;background:#edf5ff;margin-left:13px}.layer-p{border-color:#22b89a;background:#eafaf5;margin-left:26px}
+.concept-cards{display:grid;gap:12px}
+.concept-card{padding:19px 20px;box-shadow:none;display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start}
+.concept-card .iconbox{width:40px;height:40px;border-radius:12px;background:#f0f3f8;display:grid;place-items:center;font-size:18px}
+.concept-card h3{font-size:16px;margin:0 0 4px}.concept-card p{font-size:13px;color:var(--muted);margin:0}
+.callout{border-left:3px solid var(--purple);background:#f0edff;padding:16px 18px;border-radius:0 12px 12px 0;color:#43366e;font-size:14px;margin-top:20px}
+.pillar-layout{display:grid;grid-template-columns:280px 1fr;gap:20px}
+.pillar-tabs{display:grid;gap:9px;align-content:start}
+.pillar-tab{background:transparent;border:1px solid var(--line);border-radius:12px;text-align:left;padding:15px;color:var(--muted);cursor:pointer}
+.pillar-tab strong{display:block;color:var(--ink);font-size:14px}.pillar-tab small{font-size:11px}
+.pillar-tab.active{background:var(--navy);border-color:var(--navy);color:#c4cede}.pillar-tab.active strong{color:var(--lime)}
+.pillar-panel{padding:28px;box-shadow:none;min-height:300px}
+.pillar-panel .label{font:11px var(--mono);color:var(--purple);letter-spacing:.12em;text-transform:uppercase}
+.pillar-panel h3{font-size:29px;letter-spacing:-.03em;margin:10px 0}
+.pillar-panel p{color:var(--muted);max-width:680px}
+.pillar-panel ul{padding-left:20px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pillar-panel li::marker{color:var(--teal)}
+.loop-section{background:#edf1f7}
+.explorer{padding:22px;box-shadow:none}
+.explorer-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:start}
+.step-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.step-tab{border:1px solid var(--line);background:#f8f9fc;border-radius:11px;padding:11px 9px;text-align:left;cursor:pointer;color:var(--muted);font:11px var(--mono)}
+.step-tab b{display:block;font:22px var(--sans);color:var(--ink);margin-bottom:3px}
+.step-tab.active{border-color:var(--navy);background:var(--navy);color:#b8c4d7}.step-tab.active b{color:var(--lime)}
+.diagram{background:var(--navy);border-radius:16px;padding:14px;overflow:hidden}
+.diagram svg{width:100%;height:auto;display:block}
+.diagram text{font-family:var(--sans);font-size:12px;fill:#eaf0f9;text-anchor:middle}
+.diagram .muted{fill:#93a3bb;font-size:10px;font-family:var(--mono)}
+.diagram .box{fill:#18263b;stroke:#52627a;stroke-width:1.2}
+.diagram .agent{stroke:var(--purple)}.diagram .verify{stroke:var(--teal)}.diagram .event{stroke:var(--blue)}.diagram .hill{stroke:var(--orange)}
+.diagram .outline{fill:none;stroke-width:1.4;stroke-dasharray:6 5}
+.diagram .arrow{fill:none;stroke:#7f91aa;stroke-width:1.5}
+.info-panel{padding:26px;background:#fff;border:1px solid var(--line);border-radius:16px;position:sticky;top:88px}
+.info-panel .step-label{font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--purple)}
+.info-panel h3{font-size:30px;line-height:1.1;letter-spacing:-.04em;margin:10px 0 14px}
+.info-panel p{font-size:14px;color:var(--muted)}
+.info-panel .rule{padding:14px;background:#f5f7fb;border-radius:11px;color:#33425a;font-size:13px;margin:18px 0}
+.tags{display:flex;gap:7px;flex-wrap:wrap}.tag{border:1px solid var(--line);border-radius:99px;padding:5px 9px;font:10px var(--mono);color:#52627a}
+.info-panel .next{width:100%;margin-top:20px;background:var(--navy);color:#fff}
+.human-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.human-card{padding:21px;box-shadow:none}
+.human-card .num{font:11px var(--mono);color:var(--teal)}
+.human-card h3{font-size:18px;line-height:1.2;margin:13px 0 8px}
+.human-card p{font-size:13px;color:var(--muted);margin:0}
+footer{background:var(--navy);color:#9eacc0;padding:32px 0;font:11px var(--mono)}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.foot a.repo{color:var(--lime);border-bottom:1px dotted rgba(201,243,106,.4);transition:border-color .2s}
+.foot a.repo:hover{border-color:var(--lime)}
+/* —— WORD CLOUD STYLES —— */
+.cloud-section{background:linear-gradient(145deg,#ffffff 0%,#f8faff 100%);border-radius:32px;padding:18px 8px 28px;}
+.cloud-container{position:relative;min-height:380px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 18px;padding:28px 12px;border-radius:24px;background:radial-gradient(ellipse at 30% 40%,rgba(138,115,245,.04),transparent 60%),#fff;border:1px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .3s}
+.cloud-word{display:inline-block;padding:6px 12px;border-radius:60px;cursor:pointer;transition:all .22s cubic-bezier(.2,.9,.3,1);line-height:1.2;font-weight:500;letter-spacing:-.01em;border:1px solid transparent;position:relative;will-change:transform,background}
+.cloud-word:hover{background:rgba(138,115,245,.08);border-color:rgba(138,115,245,.3);transform:scale(1.08) translateY(-2px);z-index:2;box-shadow:0 8px 24px rgba(138,115,245,.15)}
+.cloud-word:active{transform:scale(.96)}
+.cloud-word.selected{background:var(--navy);color:#fff!important;border-color:var(--navy);box-shadow:0 12px 30px -6px rgba(16,24,39,.4);transform:scale(1.04)}
+.cloud-word[data-size="large"]{font-size:28px;font-weight:700;color:#1e293b}
+.cloud-word[data-size="medium"]{font-size:19px;font-weight:500;color:#334155}
+.cloud-word[data-size="small"]{font-size:14px;font-weight:400;color:#64748b;opacity:.9}
+.cloud-word[data-size="tiny"]{font-size:11px;font-weight:400;color:#94a3b8;letter-spacing:.01em;opacity:.8}
+.cloud-panel{margin-top:24px;padding:22px 28px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);min-height:110px;transition:all .3s ease;display:flex;flex-direction:column;justify-content:center}
+.cloud-panel .placeholder{color:#94a3b8;font-size:15px;font-style:italic;text-align:center;transition:opacity .3s}
+.cloud-panel .definition{display:none;animation:fadeUp .35s ease}
+.cloud-panel .definition.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.definition-term{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;color:var(--ink)}
+.definition-cat{display:inline-block;font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;background:#f0f3f8;padding:4px 10px;border-radius:99px;color:var(--muted);margin-bottom:10px}
+.definition-text{font-size:15px;color:#334155;line-height:1.65;max-width:780px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px}.hero-art{max-width:650px}.concept-grid,.explorer-grid{grid-template-columns:1fr}.pillar-layout{grid-template-columns:1fr}.pillar-tabs{grid-template-columns:repeat(2,1fr)}.info-panel{position:static}.human-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.wrap{width:min(100% - 28px,1160px)}.nav{height:60px}.navlinks{display:none;position:absolute;top:60px;left:0;right:0;background:var(--navy);padding:14px 20px 20px;flex-direction:column;align-items:flex-start;border-bottom:1px solid #334155}.navlinks.show{display:flex}.menu{display:block;margin-left:auto}.hero{padding:58px 0 42px}h1{font-size:46px}.hero p{font-size:16px}section{padding:58px 0}.concept-grid{gap:14px}.pillar-tabs{grid-template-columns:1fr 1fr}.pillar-panel{padding:21px}.pillar-panel ul{grid-template-columns:1fr}.step-tabs{grid-template-columns:repeat(2,1fr)}.explorer{padding:13px}.diagram{padding:7px}.human-grid{grid-template-columns:1fr}.cloud-word[data-size="large"]{font-size:22px}.cloud-word[data-size="medium"]{font-size:16px}.cloud-word[data-size="small"]{font-size:12px}.cloud-word[data-size="tiny"]{font-size:10px}.cloud-panel{padding:16px 18px}.foot{display:block}.foot span{display:block;margin:7px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap nav">
+ <a class="brand" href="#top"><span class="brandmark">↻</span> LOOP / ENGINEERING</a>
+ <nav class="navlinks" id="navlinks" aria-label="Main navigation"><a href="#foundations">Foundations</a><a href="#deep-agent">Deep agent</a><a href="#loops">Four loops</a><a href="#oversight">Human oversight</a><a href="#glossary">Glossary</a></nav>
+ <button class="menu" id="menu" aria-label="Toggle navigation" aria-expanded="false">Menu</button>
+</div></div>
+<header class="hero" id="top"><div class="wrap">
+ <div class="hero-grid">
+  <div>
+   <div class="eyebrow">An interactive field guide · Edition 01</div>
+   <h1>Build agents that<br><span>get better</span> over time.</h1>
+   <p>Loop engineering wraps a one-shot LLM call in feedback systems—so agents can act, verify, respond to events, and improve their own harness over time.</p>
+   <div class="actions"><a class="btn primary" href="#loops">Explore the four loops <span>↘</span></a><a class="btn ghost" href="#glossary">Explore the glossary</a></div>
+   <div class="hero-note">RELIABILITY IS A SYSTEM PROPERTY — NOT A PROMPT TRICK.</div>
+  </div>
+  <aside class="hero-art" aria-label="Four loop layers overview">
+   <div class="art-head"><span>THE LOOP STACK</span><span class="live">COMPOSABLE</span></div>
+   <div class="loop-stack">
+    <div class="loop-band l4"><span class="num">04</span><div><strong>Hill-climbing loop</strong><small>Improve future runs</small></div><span class="arrow">↗</span></div>
+    <div class="loop-band l3"><span class="num">03</span><div><strong>Event-driven loop</strong><small>Decide when to run</small></div><span class="arrow">↻</span></div>
+    <div class="loop-band l2"><span class="num">02</span><div><strong>Verification loop</strong><small>Improve this run</small></div><span class="arrow">✓</span></div>
+    <div class="loop-band l1"><span class="num">01</span><div><strong>Agent loop</strong><small>Act · Observe · Continue</small></div><span class="arrow">→</span></div>
+   </div>
+  </aside>
+ </div>
+</div></header>
+
+<section id="foundations"><div class="wrap">
+ <div class="section-head"><div class="kicker">01 / Foundations</div><h2>Four disciplines.<br>One <em>engineering stack.</em></h2><p>Each discipline widens the scope. Loops are one important part of the harness around the model.</p></div>
+ <div class="concept-grid">
+  <div class="stack-card"><div class="kicker">From inner to outer</div><div class="stack-visual" style="margin-top:16px">
+   <div class="stack-layer layer-h">HARNESS ENGINEERING<small>Runtime, tools, memory, skills, filesystem, loops</small>
+    <div class="stack-layer layer-c">CONTEXT ENGINEERING<small>Right information, at the right time</small>
+     <div class="stack-layer layer-p">PROMPT ENGINEERING<small>The instructions</small></div>
+    </div>
+   </div></div>
+   <div class="callout">Agents are <strong>non-deterministic</strong>: the same code and input can behave differently. Understand behavior from traces—not code alone.</div>
+  </div>
+  <div class="concept-cards">
+   <article class="concept-card"><div class="iconbox">✎</div><div><h3>Prompt engineering</h3><p>Optimize the instructions sent to a model. It is only one part of the context.</p></div></article>
+   <article class="concept-card"><div class="iconbox">▤</div><div><h3>Context engineering</h3><p>Make sure the right information reaches the LLM at the right time.</p></div></article>
+   <article class="concept-card"><div class="iconbox">⌘</div><div><h3>Harness engineering</h3><p>Design the systems around the model: filesystems, interpreters, sandboxes, instructions and memory.</p></div></article>
+   <article class="concept-card"><div class="iconbox">↻</div><div><h3>Loop engineering</h3><p>Build feedback loops around an agent to make it more reliable and improve over time.</p></div></article>
+  </div>
+ </div>
+</div></section>
+
+<section id="deep-agent"><div class="wrap">
+ <div class="section-head"><div class="kicker">02 / Deep agent</div><h2>A ReAct loop with<br><em>four pillars.</em></h2><p>A deep agent is a base ReAct loop plus middleware for longer-running tasks. Select a pillar to explore its role.</p></div>
+ <div class="pillar-layout"><div class="pillar-tabs" id="pillarTabs" role="tablist" aria-label="Deep agent pillars"></div><article class="pillar-panel" id="pillarPanel" aria-live="polite"></article></div>
+</div></section>
+
+<section class="loop-section" id="loops"><div class="wrap">
+ <div class="section-head"><div class="kicker">03 / The four loops</div><h2>Wrap the loop.<br><em>Then wrap it again.</em></h2><p>Loops are composable. Step through the layers to see how each one extends the previous system.</p></div>
+ <div class="explorer"><div class="explorer-grid">
+  <div><div class="step-tabs" id="stepTabs" role="tablist" aria-label="Loop stages"></div>
+   <div class="diagram"><svg id="loopSvg" viewBox="0 0 640 430" role="img" aria-label="Diagram of nested agent loops"></svg></div>
+  </div>
+  <aside class="info-panel" id="loopInfo" aria-live="polite"></aside>
+ </div></div>
+</div></section>
+
+<section id="oversight"><div class="wrap">
+ <div class="section-head"><div class="kicker">04 / Human oversight</div><h2>Automated.<br><em>Never unattended.</em></h2><p>People remain important in highly automated systems. Put review at meaningful points in the loop.</p></div>
+ <div class="human-grid">
+  <article class="human-card"><div class="num">01 / CORE LOOP</div><h3>Sensitive tool calls</h3><p>Approve actions such as writes, sends, or pull requests before they execute.</p></article>
+  <article class="human-card"><div class="num">02 / VERIFICATION</div><h3>Grader stage</h3><p>A person reviews or overrides the grader’s verdict.</p></article>
+  <article class="human-card"><div class="num">03 / OUTPUT</div><h3>Artifacts &amp; results</h3><p>Approve what the agent produced before it reaches users.</p></article>
+  <article class="human-card"><div class="num">04 / HILL-CLIMBING</div><h3>Harness changes</h3><p>Review proposed changes before prompts, tools, or skills are updated.</p></article>
+ </div>
+</div></section>
+
+<!-- —— WORD CLOUD REPLACES GLOSSARY —— -->
+<section id="glossary"><div class="wrap">
+ <div class="section-head"><div class="kicker">05 / Glossary</div><h2>Every term.<br><em>One tap away.</em></h2><p>Click any word in the cloud to reveal its definition. Hover to explore.</p></div>
+ <div class="cloud-section">
+  <div class="cloud-container" id="cloudContainer" role="group" aria-label="Interactive glossary word cloud"></div>
+  <div class="cloud-panel" id="cloudPanel" aria-live="polite">
+   <div class="placeholder" id="cloudPlaceholder">👆 Click a word above to see its definition</div>
+   <div class="definition" id="cloudDefinition">
+    <div class="definition-term" id="defTerm"></div>
+    <div class="definition-cat" id="defCat"></div>
+    <div class="definition-text" id="defText"></div>
+   </div>
+  </div>
+ </div>
+</div></section>
+<footer><div class="wrap foot">
+ <span>LOOP / ENGINEERING · INTERACTIVE FIELD GUIDE</span>
+ <span>Source code: <a class="repo" href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank" rel="noopener">github.com/YOUR_USERNAME/YOUR_REPO</a></span>
+</div></footer>
+<script>
+const $=s=>document.querySelector(s);
+const pillars=[
+ {name:"Execution Environment",desc:"Gives the agent a place and the capabilities to do real work. The filesystem is the backbone of a deep agent.",items:["Filesystem (AGENTS.md, skills)","Code interpreter","Sandbox"]},
+ {name:"Delegation",desc:"Breaks complex work into a plan, then dispatches smaller units of work to subagents.",items:["Planning","Subagents"]},
+ {name:"Context Management",desc:"Keeps long-running tasks workable through memory, skills, summarization, and context offloading.",items:["Summarization","Context offloading","Prompt caching (on by default)"]},
+ {name:"Steering",desc:"Guides the agent toward the intended outcome with controls, rubrics, and human review.",items:["Human-in-the-loop controls","Grading rubrics"]}
+];
+const loops=[
+ {name:"Agent loop",short:"Agent",title:"The core cycle",desc:"The model receives context, calls tools, observes their results, and continues until the task is done. Every other loop is built around this one.",rule:"Stops when the model finishes. Maximum model turns is a safety net against pointless retries—not the normal stopping mechanism.",tags:["ReAct","Observation","Maximum Model Turns","Model Selection"]},
+ {name:"Verification loop",short:"Verify",title:"Improve this run",desc:"A grader scores the output against a rubric. If any criterion fails, specific feedback goes back to the agent for another attempt.",rule:"Improves only the current run. The agent starts from the same place next time. Set maximum rubric iterations to 0 to switch it off.",tags:["Grader","Rubric","Grader Feedback","Max Rubric Iterations"]},
+ {name:"Event-driven loop",short:"Events",title:"Decide when to run",desc:"Connects the agent to where work happens. A trigger—such as a new ticket, email, or message—starts a run, and the result updates the system.",rule:"This loop can wrap a bare agent loop, with or without verification. Loops are composable.",tags:["Trigger","Webhook","Chat Bot","Automation Rule","Tunneling Service"]},
+ {name:"Hill-climbing loop",short:"Improve",title:"Improve future runs",desc:"An analysis agent reads traces from many completed runs, finds recurring failure modes, and proposes harness changes: prompts, tools, skills, or memory.",rule:"A person reviews each harness-change proposal. Run an eval suite before merging to catch regressions.",tags:["Trace","Failure Mode","Analysis Agent","Eval","Regression"]}
+];
+function renderPillars(){
+ const tabs=$("#pillarTabs");
+ tabs.innerHTML=pillars.map((p,i)=>`<button class="pillar-tab ${i===0?"active":""}" role="tab" aria-selected="${i===0}" data-i="${i}"><strong>0${i+1} · ${p.name}</strong><small>${["Enable action","Break down work","Sustain long runs","Guide outcomes"][i]}</small></button>`).join("");
+ tabs.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showPillar(+b.dataset.i)));
+ showPillar(0);
+}
+function showPillar(i){
+ $("#pillarTabs").querySelectorAll("button").forEach((b,j)=>{b.classList.toggle("active",i===j);b.setAttribute("aria-selected",i===j)});
+ const p=pillars[i];$("#pillarPanel").innerHTML=`<div class="label">PILLAR 0${i+1}</div><h3>${p.name}</h3><p>${p.desc}</p><ul>${p.items.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+}
+function diagram(stage){
+ const c=(x,y,w,h,cls,txt,sub="")=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" class="box ${cls}"/><text x="${x+w/2}" y="${y+(sub?20:h/2+4)}">${txt}</text>${sub?`<text class="muted" x="${x+w/2}" y="${y+35}">${sub}</text>`:""}`;
+ let s=`<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7f91aa"/></marker></defs>`;
+ if(stage>=3){s+=`<rect x="14" y="18" width="612" height="394" rx="15" class="outline event"/><text class="muted" x="85" y="36" style="fill:#75aaff">EVENT LOOP</text>${c(215,45,210,34,"event","event trigger")}<path d="M320 79V100" class="arrow" marker-end="url(#arrow)"/>`}
+ if(stage>=2){s+=`<rect x="35" y="100" width="570" height="250" rx="13" class="outline verify"/><text class="muted" x="105" y="118" style="fill:#4bd5b3">VERIFICATION LOOP</text>${c(65,292,390,42,"verify","grader","rubric / eval")}<path d="M320 260V292" class="arrow" marker-end="url(#arrow)"/><path d="M65 313C30 313 30 155 90 155" fill="none" stroke="#22b89a" stroke-width="1.8" marker-end="url(#arrow)"/><text class="muted" x="47" y="238" style="fill:#4bd5b3">retry</text>${c(480,296,95,34,"","pass")}<path d="M455 313H480" class="arrow" marker-end="url(#arrow)"/>`}
+ s+=`<rect x="75" y="135" width="490" height="125" rx="12" class="outline agent"/><text class="muted" x="140" y="152" style="fill:#b6a5ff">AGENT LOOP</text>${c(105,165,170,38,"agent","model")}${c(365,165,170,38,"agent","tools")}<path d="M275 178H365" stroke="#8a73f5" stroke-dasharray="4 4" class="arrow" marker-end="url(#arrow)"/><text class="muted" x="320" y="170">action</text><path d="M365 194H275" stroke="#8a73f5" stroke-dasharray="4 4" class="arrow" marker-end="url(#arrow)"/><text class="muted" x="320" y="210">observation</text>${c(105,215,170,32,"","result")}<path d="M190 203V215" class="arrow" marker-end="url(#arrow)"/>`;
+ if(stage>=3){s+=`${c(75,365,380,34,"event","system update","service improves")}<path d="M265 334V365" class="arrow" marker-end="url(#arrow)"/>`}
+ if(stage>=4){s+=`${c(480,365,130,34,"hill","trace analysis")}<path d="M455 382H480" class="arrow" marker-end="url(#arrow)"/><path d="M545 365V80H425" fill="none" stroke="#f28a60" stroke-width="1.8" marker-end="url(#arrow)"/><text class="muted" x="570" y="230" style="fill:#f5a17d">harness update</text>`}
+ return s;
+}
+function showLoop(i){
+ $("#stepTabs").innerHTML=loops.map((l,j)=>`<button class="step-tab ${i===j?"active":""}" role="tab" aria-selected="${i===j}" data-i="${j}"><b>0${j+1}</b>${l.short}</button>`).join("");
+ $("#stepTabs").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showLoop(+b.dataset.i)));
+ $("#loopSvg").innerHTML=diagram(i+1);
+ const l=loops[i];$("#loopInfo").innerHTML=`<div class="step-label">LOOP 0${i+1} / ${l.name}</div><h3>${l.title}</h3><p>${l.desc}</p><div class="rule"><strong>Design note</strong><br>${l.rule}</div><div class="tags">${l.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><button class="btn next" id="nextLoop">${i<3?"Add next loop →":"Restart from core loop ↺"}</button>`;
+ $("#nextLoop").addEventListener("click",()=>showLoop((i+1)%4));
+}
+/* ——— GLOSSARY DATA (complete, preserved from original) ——— */
+const glossaryText=`Foundations|Agent|An LLM-based system that acts, observes what happened, and decides what to do next instead of responding once.
+Foundations|Tool|A function the agent calls to act on the world. Good tool descriptions tell the model when and how to use it.
+Foundations|Observation|The result a tool returns to the model, used to decide the next step.
+Foundations|Context|Everything the model sees on a call: prompt, tool descriptions and results, messages, documents, and memory.
+Foundations|System Prompt|Instructions sent on every call, set when the agent is created.
+Foundations|Non-determinism|Agents can behave differently across runs with the same code and input, so inspect the traces.
+Disciplines|Prompt Engineering|Optimizing the instructions sent to a model. Narrower than context engineering.
+Disciplines|Context Engineering|Getting the right information to the LLM at the right time.
+Disciplines|Harness Engineering|Designing the systems around the model: filesystems, interpreters, sandboxes, instructions, and memory.
+Disciplines|Loop Engineering|Building loops around an agent so it becomes more reliable and improves over time.
+Disciplines|Agent Harness|Tools, instructions, skills, memory, and other systems around the model. Improving it improves future runs.
+Core loop|Agent Loop|The model gets context, calls tools, observes results, and repeats until the task is complete.
+Core loop|ReAct Agent|Reasoning and Acting interleaved with tool calls in a loop. From a 2022 paper; the base of many frameworks.
+Core loop|Maximum Model Turns|A limit on model calls per run. A safety net, not the normal stopping mechanism.
+Core loop|Model Selection|Cheaper, faster models for simple tasks; slower, more capable ones for complex tasks.
+Harness|Middleware|Code added before and after the agent, model, or tools to layer on features.
+Harness|Deep Agent|A ReAct loop plus middleware for long tasks, built on four pillars.
+Harness|Execution Environment|Tools, a filesystem, and optionally a code interpreter or sandbox.
+Harness|Sandbox|An isolated environment to safely generate and run code.
+Harness|Delegation|Planning a complex task and dispatching smaller work to subagents.
+Harness|Context Management|Memory, skills, summarization, and offloading for long-running work.
+Harness|Prompt Caching|Reusing repeated context across calls to cut cost and latency.
+Harness|Steering|Human-in-the-loop controls and grading rubrics that guide outcomes.
+Memory|AGENTS.md|An instruction file fully loaded at the start of every run; it can be edited over time.
+Memory|Skill|Specialized instructions for one task type, loaded on demand.
+Memory|Frontmatter|A short header on a skill that tells the agent whether to load the rest.
+Memory|Progressive Disclosure|Loading short skill descriptions first and full content only when needed.
+Memory|Memory|Information persisted across runs, such as user preferences.
+Memory|Memory Consolidation|A background task that organizes learnings into persistent memory.
+Verification|Verification Loop|A grader checks output against criteria and sends feedback for another attempt. Useful for cheaper models on hard tasks.
+Verification|Grader|An agent that scores the result against a rubric. A different model is a common choice.
+Verification|Rubric|Explicit pass/fail criteria for a good result. Accepted only when every criterion passes.
+Verification|Rubric Criterion|A pass/fail check specific enough that failure names the exact gap.
+Verification|Grader Feedback|A specific explanation of what is missing. Vague feedback causes guessing.
+Verification|Maximum Rubric Iterations|How many times the grader may send work back. Zero removes the loop.
+Event-driven|Event-Driven Loop|Runs the agent in response to real-world events, deciding when it should execute.
+Event-driven|Trigger|What starts a run: scheduled (daily summary) or ad hoc (new email, ticket).
+Event-driven|Nested Loops|Loops sit inside one another and are composable.
+Event-driven|Integration|A connection to an external tool so events start the agent and results flow back.
+Event-driven|Chat Bot|An app in a messaging workspace that replies to mentions, making output part of team discussion.
+Event-driven|Automation Rule|A rule inside a work tool that acts on a condition, typically calling the agent via webhook.
+Event-driven|Webhook|A URL a tool calls automatically when an event happens, sending event details.
+Event-driven|Tunneling Service|Exposes a local agent at a public URL so webhooks can reach it.
+Event-driven|API Credentials|Keys or tokens stored in an environment file or secrets manager, never in code.
+Event-driven|Dual-Format Response|A result formatted for the destination tool plus raw Markdown for reuse.
+Event-driven|Agent Specification|A written description of behavior, inputs, and integrations a coding agent can build from.
+Hill-climbing|Hill-Climbing Loop|Mines traces from many runs to improve the harness for future runs.
+Hill-climbing|Trace|A record of every step an agent took. The story of a run lives here, not in code.
+Hill-climbing|Failure Mode|A recurring failure: bad tool arguments, missed tool calls, or misleading prompts.
+Hill-climbing|Analysis Agent|Reads traces after runs, detects failure modes, and proposes harness updates.
+Hill-climbing|Harness Change Proposal|A human-readable summary of evidence, existing content, and proposed update, reviewed before applying.
+Hill-climbing|Eval|A task set measuring agent quality, giving confidence a change helps.
+Hill-climbing|Regression|A change that makes the agent worse on tasks it handled well. Evals help catch these.
+Oversight|Human-in-the-Loop|A person approves or reviews at chosen points in an automated agent.`.split("\n").map(x=>x.split("|"));
+
+/* ——— BUILD WORD CLOUD ——— */
+const wordCloudData = glossaryText.map(([cat, term, def]) => ({ cat, term, def }));
+
+function getSize(term) {
+  const t = term.toLowerCase();
+  if (["agent", "context", "memory", "trace", "tool", "loop"].includes(t)) return "large";
+  if (["grader", "rubric", "harness", "trigger", "skill", "eval", "observation", "webhook", "delegation", "sandbox"].includes(t)) return "medium";
+  if (t.length > 12 || ["verification loop","maximum model turns","memory consolidation","progressive disclosure","harness change proposal","event-driven loop","hill-climbing loop","human-in-the-loop","automation rule","tunneling service","dual-format response","agent specification","non-determinism","system prompt"].includes(t)) return "tiny";
+  return "small";
+}
+
+const cloudContainer = $("#cloudContainer");
+const placeholderEl = $("#cloudPlaceholder");
+const definitionEl = $("#cloudDefinition");
+const defTerm = $("#defTerm");
+const defCat = $("#defCat");
+const defText = $("#defText");
+
+let selectedWord = null;
+
+function buildCloud() {
+  cloudContainer.innerHTML = "";
+  const shuffled = [...wordCloudData].sort(() => Math.random() - 0.5);
+  shuffled.forEach((item, idx) => {
+    const span = document.createElement("span");
+    span.className = "cloud-word";
+    span.textContent = item.term;
+    span.dataset.size = getSize(item.term);
+    span.dataset.term = item.term;
+    span.dataset.cat = item.cat;
+    span.dataset.def = item.def;
+    const rot = (Math.random() - 0.5) * 6;
+    span.style.transform = `rotate(${rot}deg)`;
+    span.style.transitionDelay = `${idx * 0.008}s`;
+    span.style.margin = `${Math.random() * 4}px ${Math.random() * 6}px`;
+    span.dataset.rot = rot;
+    span.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectWord(span);
+    });
+    span.addEventListener("mouseenter", () => {
+      if (selectedWord !== span) {
+        span.style.transform = `rotate(${rot}deg) scale(1.1) translateY(-2px)`;
+      }
+    });
+    span.addEventListener("mouseleave", () => {
+      if (selectedWord !== span) {
+        span.style.transform = `rotate(${rot}deg) scale(1) translateY(0)`;
+      }
+    });
+    cloudContainer.appendChild(span);
+  });
+}
+
+function selectWord(el) {
+  if (selectedWord) {
+    selectedWord.classList.remove("selected");
+    const rot = selectedWord.dataset.rot || 0;
+    selectedWord.style.transform = `rotate(${rot}deg)`;
+  }
+  if (selectedWord === el) {
+    selectedWord = null;
+    definitionEl.classList.remove("active");
+    placeholderEl.style.display = "block";
+    return;
+  }
+  selectedWord = el;
+  el.classList.add("selected");
+  el.style.transform = `rotate(0deg) scale(1.05)`;
+  defTerm.textContent = el.dataset.term;
+  defCat.textContent = el.dataset.cat;
+  defText.textContent = el.dataset.def;
+  placeholderEl.style.display = "none";
+  definitionEl.classList.add("active");
+}
+
+cloudContainer.addEventListener("click", (e) => {
+  if (e.target === cloudContainer) {
+    if (selectedWord) {
+      selectedWord.classList.remove("selected");
+      const rot = selectedWord.dataset.rot || 0;
+      selectedWord.style.transform = `rotate(${rot}deg)`;
+      selectedWord = null;
+      definitionEl.classList.remove("active");
+      placeholderEl.style.display = "block";
+    }
+  }
+});
+
+renderPillars();
+showLoop(0);
+buildCloud();
+
+$("#menu").addEventListener("click",()=>{const nav=$("#navlinks"),opened=nav.classList.toggle("show");$("#menu").setAttribute("aria-expanded",opened)});
+$("#navlinks").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{$("#navlinks").classList.remove("show");$("#menu").setAttribute("aria-expanded","false")}));
+
+window.addEventListener("load", () => {
+  document.querySelectorAll(".cloud-word").forEach((w, i) => {
+    w.style.opacity = "0";
+    w.style.transform = `scale(0.8) rotate(${(Math.random()-0.5)*10}deg)`;
+    setTimeout(() => {
+      w.style.transition = "opacity .4s ease, transform .4s cubic-bezier(.2,.9,.3,1.2)";
+      w.style.opacity = "1";
+      const r = w.dataset.rot || 0;
+      w.style.transform = `rotate(${r}deg) scale(1)`;
+    }, 100 + i * 15);
+  });
+});
+</script>
+</body>
+</html>

@@ -92,20 +92,3 @@ docs/             index.html (interactive explainer, GitHub Pages), architecture
 MASTER_PLAN.md    build plan and status for any coding agent
 ```
 
-## Honest notes
-
-* **The hill-climb weakness is seeded.** `AGENTS.v1.md` asks only for `Reason:` lines, while the rubric requires `Resolved by:` and `Edge case:` lines. The loop *discovers and fixes* that from run evidence; the agent is not mysteriously bad.
-* **Demo runs are scripted, not model output.** They are generated from the requirement text, and their outcome depends on the harness text (a harness with the labelled lines passes on the first attempt). Put real recorded runs in `demo/reviews/<ID>/run_*.json` to have them replayed instead.
-* Free models are volatile (slugs rotate, tool calling varies, peak-hour throttling). `reqreview doctor` checks the current state.
-* Built on beta `deepagents` APIs (`RubricMiddleware`, `FilesystemPermission`). Pin the versions you test with.
-
-MIT licensed.
-
-## Publish the explainer on GitHub Pages
-
-`docs/index.html` is one self-contained file (no build, no external requests). Either:
-
-* **Workflow (included):** Settings > Pages > Source: **GitHub Actions**. `.github/workflows/pages.yml` deploys `docs/` on every push to `main`.
-* **No workflow:** Settings > Pages > Source: **Deploy from a branch**, branch `main`, folder `/docs`.
-
-Then replace `<your-user>` in `docs/index.html` and in this README.
